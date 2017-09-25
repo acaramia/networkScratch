@@ -78,6 +78,7 @@ def poll():
     #    print(b)
     return s
 
+
 @app.route('/reset_all')
 def reset_all():
     global jobs, variables
@@ -105,7 +106,7 @@ def write(jobId,varname,varvalue,username):
 def read(jobId,varname,username):
     global jobs, variables, db
     jobs.add(jobId)
-    value = db.select(varname,username)
+    value = db.select(varname, username)
     addVariable("value", value)
     jobs.remove(jobId)
     return "OK"

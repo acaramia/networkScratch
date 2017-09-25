@@ -72,7 +72,10 @@ class Db:
             sql = "SELECT varvalue FROM vars where varname=%s and username=%s"
             cursor.execute(sql,(varname,username))
             result = cursor.fetchone()
-            return result["varvalue"]
+            if result and ("varvalue" in result):
+                return result["varvalue"]
+            else:
+                return "{} of {} not found".format(varname,username)
 
     def disconnect(self):
         self.connection.close()
