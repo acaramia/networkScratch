@@ -48,6 +48,12 @@ def initLogger(app):
         logger[0].addHandler(handler)
         logger[0].setLevel(logger[1])
 
+def log(s):
+    app.logger.debug("executing {}".format(s))
+
+def addVariable(varName, varValue):
+    global variables
+    variables[varName] = str(varValue)
 
 @app.errorhandler(Exception)
 def exceptions(e):
@@ -79,15 +85,6 @@ def reset_all():
 @app.route('/crossdomain.xml')
 def cross_domain_check():
     return '<cross-domain-policy><allow-access-from domain="*" to-ports="'+EXTENSION_PORT+'"/></cross-domain-policy>'
-
-# PYCRAFT FUNCTIONS:
-
-def log(s):
-    app.logger.debug("executing {}".format(s))
-
-def addVariable(varName, varValue):
-    global variables
-    variables[varName] = str(varValue)
 
 @app.route('/penup/<int:jobId>')
 def penup(jobId):
