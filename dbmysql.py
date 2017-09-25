@@ -17,7 +17,7 @@ class Db:
 
     def __init__(self):
         # Connect to the database
-        print("connecting to "+'85.10.205.173')
+        print("connecting to ip 85.10.205.173 for fast connection (real hostname is mysql8.db4free.net)")
         self.connection = pymysql.connect(host='85.10.205.173', #mysql8.db4free.net',
                                      port=3307,
                                      user='scratch',
@@ -29,7 +29,7 @@ class Db:
         self.createtable()
 
     def drop(self):
-        print("createtable")
+        print("drop table")
         sql = "drop table vars"
         with self.connection.cursor() as cursor:
             try:
@@ -39,7 +39,7 @@ class Db:
             self.connection.commit()
 
     def createtable(self):
-        print("createtable")
+        print("create table (please ignore warning 1050, Table 'vars' already exists)")
         sql="""
         CREATE TABLE IF NOT EXISTS vars (
            
