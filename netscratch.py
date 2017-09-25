@@ -25,6 +25,7 @@
 from flask import Flask, request
 import logging
 import time
+import pymysql.cursors
 
 """ 
   global variables
@@ -33,6 +34,8 @@ app = Flask("NetworkScratch")
 EXTENSION_PORT = 3330
 jobs = set()  # jobs keeps the waiting jobs id. blocks type:'w'
 variables = {}  # addVariable to return values to scratch (blocks type: 'r')
+db=None
+
 
 def initLogger(app):
     """ initialize logger, app to DEBUG and flask to ERROR """
@@ -79,82 +82,31 @@ def poll():
 def reset_all():
     global jobs, variables
     jobs = set()
-    variables = {}
     return "OK"
+
 
 @app.route('/crossdomain.xml')
 def cross_domain_check():
     return '<cross-domain-policy><allow-access-from domain="*" to-ports="'+EXTENSION_PORT+'"/></cross-domain-policy>'
 
-@app.route('/penup/<int:jobId>')
-def penup(jobId):
-    global myturtle, jobs, variables
+
+@app.route('/write/<int:jobId>/<string:varname>/<string:varvalue>/<string:username>')
+def write(jobId,varname,varvalue,username):
+    global jobs, variables, db
     jobs.add(jobId)
-    log("penup")
-    myturtle.penup()
+    log("write")
+    addVariable(varname, varvalue)
+    db.insert(varname,varvalue,username)
     jobs.remove(jobId)
     return "OK"
 
-@app.route('/pendown/<int:jobId>')
-def pendown(jobId):
-    global myturtle, jobs, variables
-    jobs.add(jobId)
-    log("pendown")
-    myturtle.pendown()
-    jobs.remove(jobId)
-    return "OK"
 
-@app.route('/up/<int:jobId>/<int:angle>')
-def up(jobId,angle):
-    global myturtle, jobs, variables
+@app.route('/read/<int:jobId>/<string:varname>/<string:username>')
+def read(jobId,varname,username):
+    global jobs, variables, db
     jobs.add(jobId)
-    log("up {}".format(angle))
-    myturtle.up(angle)
-    jobs.remove(jobId)
-    return "OK"
-
-@app.route('/down/<int:jobId>/<int:angle>')
-def down(jobId, angle):
-    global myturtle, jobs, variables
-    jobs.add(jobId)
-    log("down {}".format(angle))
-    myturtle.down(angle)
-    jobs.remove(jobId)
-    return "OK"
-
-@app.route('/forward/<int:jobId>/<int:steps>')
-def forward(jobId, steps):
-    global myturtle, jobs, variables
-    jobs.add(jobId)
-    log("forward {}".format(steps))
-    myturtle.forward(steps)
-    jobs.remove(jobId)
-    return "OK"
-
-@app.route('/left/<int:jobId>/<int:degrees>')
-def left(jobId, degrees):
-    global myturtle, jobs, variables
-    jobs.add(jobId)
-    log("left {}".format(degrees))
-    myturtle.left(degrees)
-    jobs.remove(jobId)
-    return "OK"
-
-@app.route('/right/<int:jobId>/<int:degrees>')
-def right(jobId, degrees):
-    global myturtle, jobs, variables
-    jobs.add(jobId)
-    log("right {}".format(degrees))
-    myturtle.right(degrees)
-    jobs.remove(jobId)
-    return "OK"
-
-@app.route('/goto/<int:jobId>/<int:x>/<int:y>/<int:z>')
-def goto(jobId, x, y, z):
-    global myturtle, jobs, variables
-    jobs.add(jobId)
-    log("goto x {} y {} z {}".format(x, y, z))
-    myturtle.goto(x, y, z)
+    value = db.select(varname,username)
+    addVariable("value", value)
     jobs.remove(jobId)
     return "OK"
 
@@ -169,13 +121,17 @@ def cube(jobId, block, side, x, y, z):
     return "OK"
 """
 
+from dbmysql import Db
+
 def main():
-    global app, myturtle, EXTENSION_PORT
+    global app, db, EXTENSION_PORT
     initLogger(app)
     print(" * The Scratch helper app is running. Have fun :)")
     print(" * ")
     print(" * Press Control + C to quit.")
     print(" * ")
+
+    db = Db()
 
     done = False
     while not done:
@@ -187,6 +143,7 @@ def main():
         else:
             print("scratch helper app done")
             done = True
+            db.disconnect()
 
 if __name__ == "__main__":
     main()
