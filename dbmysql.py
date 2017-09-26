@@ -9,7 +9,6 @@ class Db:
     Database: scratchserver
     Nome utente: scratch
     myscracth
-    Email: comodo3141@gmail.com
 
     https://github.com/PyMySQL/PyMySQL
     
