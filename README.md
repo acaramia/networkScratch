@@ -1,7 +1,8 @@
 # networkScratch
 
-Simple Scratch Extension to share variables across different computers
-Data is saved to mysql8.db4free.net
+Simple Scratch Extension to share variables across different computers.
+
+Variables are saved and shared thanks to mysql8.db4free.net
 
 # usage
 
