@@ -20,7 +20,14 @@
 #   https://github.com/blockext/blockext/tree/master/blockext
 # flask objects
 #   http://flask.pocoo.org/docs/0.12/api/
+# scratch editor source code
+#   https://github.com/LLK/scratch-flash
+#   trovati R e r e -
+#   https://scratch.mit.edu/discuss/topic/127898/?page=1#post-1141794
 #
+#   https://github.com/LLK/scratch-flash/blob/develop/src/extensions/ScratchExtension.as
+# block modding from source
+#    https://scratch.mit.edu/discuss/topic/38970/?page=1
 
 from flask import Flask, request
 import logging
@@ -101,6 +108,14 @@ def write(jobId,varname,varvalue,username):
     jobs.remove(jobId)
     return "OK"
 
+@app.route('/valueR/<string:varname>/<string:username>')
+def valueR(varname,username):
+    global jobs, variables, db
+    #jobs.add(jobId)
+    value = db.select(varname, username)
+    #addVariable("value", value)
+    #jobs.remove(jobId)
+    return value
 
 @app.route('/read/<int:jobId>/<string:varname>/<string:username>')
 def read(jobId,varname,username):

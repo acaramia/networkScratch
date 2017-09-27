@@ -4,7 +4,10 @@
   "blockSpecs": [
       ["w", "set variable %s to %s for user %s", "write", "var1", "testvalue", "user1"],
       ["w", "read variable %s of user %s", "read", "var1", "user1"],
-      ["r", "value", "value"]
+      ["-"],
+      ["r", "value", "value"],
+      ["-"],
+      ["R", "value %s of user %s", "valueR", "var1", "user1"]
   ],
   "menus": {
     "blocktype":["glowstone", "wool", "wood", "ice", "gold"]
