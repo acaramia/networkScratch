@@ -14,8 +14,8 @@
 #   https://github.com/LLK/scratchx/wiki
 # hat blocks
 #   https://scratch.mit.edu/discuss/topic/49736/
-# wedo extension
-#   https://scratch.mit.edu/scratchr2/static/js/scratch_extensions/wedoExtension.js
+# wedo2 extension
+#   https://scratch.mit.edu/scratchr2/static/js/scratch_extensions/wedo2Extension.js
 # framework scratch/snap
 #   https://github.com/blockext/blockext/tree/master/blockext
 # flask objects
@@ -28,6 +28,7 @@
 #   https://github.com/LLK/scratch-flash/blob/develop/src/extensions/ScratchExtension.as
 # block modding from source
 #    https://scratch.mit.edu/discuss/topic/38970/?page=1
+# probabilmente, l'estensione con url funziona solo sui domini concessi (github.io e code.me). da provare
 
 from flask import Flask, request
 import logging
