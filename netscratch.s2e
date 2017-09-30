@@ -1,5 +1,5 @@
 {
-  "extensionName": "Network Scratch",
+  "extensionName": "Network Scratch with Mysql",
   "extensionPort": 3330,
   "blockSpecs": [
       ["w", "set variable %s to %s for user %s", "write", "var1", "testvalue", "user1"],

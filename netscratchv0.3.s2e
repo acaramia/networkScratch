@@ -1,0 +1,14 @@
+{
+  "extensionName": "Network Scratch with http",
+  "extensionPort": 3333,
+  "blockSpecs": [
+      ["w", "set %s @ %s to %s", "set_remote", "msg", "192.168.1.10", "Hello!"],
+      ["R", "get %s @ %s", "get_remote", "msg", "192.168.1.10"],
+      ["-"],
+      ["R", "get my ip", "get_my_ip", "192.168.1.8"],
+      ["r", "last status", "status", ""]
+  ],
+  "menus": {
+    "blocktype":["glowstone", "wool", "wood", "ice", "gold"]
+  }
+}
