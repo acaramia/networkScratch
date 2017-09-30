@@ -146,17 +146,19 @@ def get_remote(remote_name, remote_ip):
     global jobs, variables
     url = "http://{}:{}/get_variable/{}".format(remote_ip, EXTENSION_PORT, remote_name)
     log("calling {}".format(url))
+    value = ""
     try:
         r = requests.get(url, timeout=0.5)  # half second timeout
-        response = r.text
         if r.status_code == requests.codes.ok:
+            value = r.text
             add_variable("status", "OK")
         else:
-            add_variable("status", "{} {}".format(r.status_code, response))
+            value = "error"
+            add_variable("status", "{}".format(r.status_code))
     except Exception:
+        value = "error"
         add_variable("status", r.status_code)
     #log("response {}", r.status_code)
-    value = response
     return value
 
 
