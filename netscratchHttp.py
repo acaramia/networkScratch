@@ -140,9 +140,9 @@ def set_remote(jobId, remote_name, remote_ip, value):
             else:
                 status = "KO {} {}".format(r.status_code, response)
     except requests.exceptions.RequestException as e:
-        status = "KO "+e
+        status = "KO "+str(e)
     add_variable("status", status)
-    log("status {}", status)
+    log("status {}".format(status))
     jobs.remove(jobId)
     return "OK"
 
@@ -161,9 +161,9 @@ def get_remote(remote_name, remote_ip):
             response = r.text
             value = response
     except requests.exceptions.RequestException as e:
-        status = "KO "+e
+        status = "KO "+str(e)
     add_variable("status", status)
-    log("status {}", status)
+    log("status {}".format(status))
     return value
 
 
