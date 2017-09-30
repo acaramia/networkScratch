@@ -40,7 +40,7 @@ import requests
 """
 app = Flask("NetworkScratchHttp")
 EXTENSION_PORT = 3333
-TIMEOUT = 2
+TIMEOUT = 0.5
 jobs = set()  # jobs keeps the waiting jobs id. blocks type:'w'
 variables = {}  # addVariable to return values to scratch (blocks type: 'r')
 
@@ -139,7 +139,7 @@ def set_remote(jobId, remote_name, remote_ip, value):
                 add_variable("status", "{} {}".format(r.status_code, response))
         else:
             add_variable("status", r.status_code)
-    except requests.exception.RequestException:
+    except requests.exceptions.RequestException:
         add_variable("status", r.status_code)
     #log("response {}", r.status_code)
     jobs.remove(jobId)
@@ -160,7 +160,7 @@ def get_remote(remote_name, remote_ip):
         else:
             value = "error"
             add_variable("status", "{}".format(r.status_code))
-    except requests.exception.RequestException:
+    except requests.exceptions.RequestException:
         value = "error"
         add_variable("status", r.status_code)
     #log("response {}", r.status_code)
