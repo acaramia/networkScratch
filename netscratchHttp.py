@@ -129,19 +129,20 @@ def set_remote(jobId, remote_name, remote_ip, value):
     #payload = {'name': remote_name, 'value': value}
     url = "http://{}:{}/set_variable/{}/{}".format(remote_ip, EXTENSION_PORT, remote_name, value)
     log("calling {}".format(url))
+    status = ""
     try:
         r = requests.get(url, timeout=TIMEOUT)
+        status = r.status_code
         if r.status_code == requests.codes.ok:
             response = r.text
             if response.startswith("OK"):
-                add_variable("status", "OK")
+                status = response
             else:
-                add_variable("status", "{} {}".format(r.status_code, response))
-        else:
-            add_variable("status", r.status_code)
-    except requests.exceptions.RequestException:
-        add_variable("status", r.status_code)
-    #log("response {}", r.status_code)
+                status = "KO {} {}".format(r.status_code, response)
+    except requests.exceptions.RequestException as e:
+        status = "KO "+e
+    add_variable("status", status)
+    log("status {}", status)
     jobs.remove(jobId)
     return "OK"
 
@@ -152,18 +153,17 @@ def get_remote(remote_name, remote_ip):
     url = "http://{}:{}/get_variable/{}".format(remote_ip, EXTENSION_PORT, remote_name)
     log("calling {}".format(url))
     value = ""
+    status = ""
     try:
         r = requests.get(url, timeout=TIMEOUT)
+        status = r.status_code
         if r.status_code == requests.codes.ok:
-            value = r.text
-            add_variable("status", "OK")
-        else:
-            value = "error"
-            add_variable("status", "{}".format(r.status_code))
-    except requests.exceptions.RequestException:
-        value = "error"
-        add_variable("status", r.status_code)
-    #log("response {}", r.status_code)
+            response = r.text
+            value = response
+    except requests.exceptions.RequestException as e:
+        status = "KO "+e
+    add_variable("status", status)
+    log("status {}", status)
     return value
 
 
