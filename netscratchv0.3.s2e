@@ -5,6 +5,9 @@
       ["w", "set %s @ %s to %s", "set_remote", "msg", "192.168.1.10", "Hello!"],
       ["R", "get %s @ %s", "get_remote", "msg", "192.168.1.10"],
       ["-"],
+      ["w", "set %s @ localhost to %s", "set_local", "msg", "Hello!"],
+      ["R", "get %s @ localhost", "get_local", "msg"],
+      ["-"],
       ["R", "get my ip", "get_my_ip", "192.168.1.8"],
       ["r", "last status", "status", ""]
   ],

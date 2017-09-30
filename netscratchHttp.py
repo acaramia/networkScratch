@@ -63,9 +63,17 @@ def log(s):
     app.logger.debug(s)
 
 
-def addVariable(varName, varValue):
+def add_variable(name, value):
     global variables
-    variables[varName] = str(varValue)
+    variables[name] = str(value)
+
+
+def read_variable(name):
+    if name in variables:
+        value = variables[name]
+    else:
+        value = "{} not found".format(name)
+    return value
 
 
 @app.errorhandler(Exception)
@@ -123,11 +131,11 @@ def set_remote(jobId, remote_name, remote_ip, value):
         r = requests.get(url, timeout=0.5)  # half second timeout
         response = r.text
         if response.startswith("OK"):
-            addVariable("status", "OK")
+            add_variable("status", "OK")
         else:
-            addVariable("status", "{} {}".format(r.status_code, response))
+            add_variable("status", "{} {}".format(r.status_code, response))
     except Exception:
-        addVariable("status", r.status_code)
+        add_variable("status", r.status_code)
     #log("response {}", r.status_code)
     jobs.remove(jobId)
     return "OK"
@@ -142,14 +150,28 @@ def get_remote(remote_name, remote_ip):
         r = requests.get(url, timeout=0.5)  # half second timeout
         response = r.text
         if r.status_code == requests.codes.ok:
-            addVariable("status", "OK")
+            add_variable("status", "OK")
         else:
-            addVariable("status", "{} {}".format(r.status_code, response))
+            add_variable("status", "{} {}".format(r.status_code, response))
     except Exception:
-        addVariable("status", r.status_code)
+        add_variable("status", r.status_code)
     #log("response {}", r.status_code)
     value = response
     return value
+
+
+@app.route('/set_local/<int:jobId>/<string:name>/<string:value>')
+def set_local(jobId, name, value):
+    global jobs
+    jobs.add(jobId)
+    add_variable(name, value)
+    jobs.remove(jobId)
+    return "OK"
+
+
+@app.route('/get_local/<string:name>')
+def get_local(name):
+    return read_variable(name)
 
 
 """  called from remote app, not from Scracth """
@@ -157,18 +179,12 @@ def get_remote(remote_name, remote_ip):
 
 @app.route('/get_variable/<string:name>')
 def get_variable(name):
-    global jobs, variables
-    if name in variables:
-        value = variables[name]
-    else:
-        value = "{} not found".format(name)
-    return value
+    return read_variable(name)
 
 
 @app.route('/set_variable/<string:name>/<string:value>')
 def set_variable(name, value):
-    global variables
-    variables[name] = value
+    add_variable(name, value)
     return "OK [{} = {}]".format(name, value)
 
 """
