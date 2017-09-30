@@ -40,6 +40,7 @@ import requests
 """
 app = Flask("NetworkScratchHttp")
 EXTENSION_PORT = 3333
+TIMEOUT = 2
 jobs = set()  # jobs keeps the waiting jobs id. blocks type:'w'
 variables = {}  # addVariable to return values to scratch (blocks type: 'r')
 
@@ -48,7 +49,7 @@ def initLogger(app):
     """ initialize logger, app to DEBUG and flask to ERROR """
     from sys import stdout
     app.logger.removeHandler(app.logger.handlers[0])
-    loggers = [[app.logger, logging.DEBUG, logging.StreamHandler(stdout)],
+    loggers = [[app.logger, logging.ERROR, logging.StreamHandler(stdout)],
                [logging.getLogger('werkzeug'), logging.ERROR, logging.NullHandler()]]
     # handler = logging.FileHandler('"Scratch_Pycraft".log')
     formatter = logging.Formatter('%(asctime)s - %(name)14s - %(levelname)s - %(message)s')
@@ -66,6 +67,7 @@ def log(s):
 def add_variable(name, value):
     global variables
     variables[name] = str(value)
+    return name
 
 
 def read_variable(name):
@@ -128,13 +130,16 @@ def set_remote(jobId, remote_name, remote_ip, value):
     url = "http://{}:{}/set_variable/{}/{}".format(remote_ip, EXTENSION_PORT, remote_name, value)
     log("calling {}".format(url))
     try:
-        r = requests.get(url, timeout=0.5)  # half second timeout
-        response = r.text
-        if response.startswith("OK"):
-            add_variable("status", "OK")
+        r = requests.get(url, timeout=TIMEOUT)
+        if r.status_code == requests.codes.ok:
+            response = r.text
+            if response.startswith("OK"):
+                add_variable("status", "OK")
+            else:
+                add_variable("status", "{} {}".format(r.status_code, response))
         else:
-            add_variable("status", "{} {}".format(r.status_code, response))
-    except Exception:
+            add_variable("status", r.status_code)
+    except requests.exception.RequestException:
         add_variable("status", r.status_code)
     #log("response {}", r.status_code)
     jobs.remove(jobId)
@@ -148,14 +153,14 @@ def get_remote(remote_name, remote_ip):
     log("calling {}".format(url))
     value = ""
     try:
-        r = requests.get(url, timeout=0.5)  # half second timeout
+        r = requests.get(url, timeout=TIMEOUT)
         if r.status_code == requests.codes.ok:
             value = r.text
             add_variable("status", "OK")
         else:
             value = "error"
             add_variable("status", "{}".format(r.status_code))
-    except Exception:
+    except requests.exception.RequestException:
         value = "error"
         add_variable("status", r.status_code)
     #log("response {}", r.status_code)
@@ -204,10 +209,11 @@ def cube(jobId, block, side, x, y, z):
 def main():
     global app, EXTENSION_PORT
     initLogger(app)
-    print(" * The Scratch helper app is running. Have fun :)")
-    print(" * ")
-    print(" * Press Control + C to quit.")
-    print(" * ")
+    print(" **************************************************")
+    print(" * The Scratch helper app is running. Have fun :) *")
+    print(" *                                                *")
+    print(" * Press Control + C to quit.                     *")
+    print(" **************************************************")
 
     done = False
     while not done:
