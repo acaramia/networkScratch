@@ -40,7 +40,7 @@ import requests
 """
 app = Flask("NetworkScratchHttp")
 EXTENSION_PORT = 3333
-TIMEOUT = 0.5
+TIMEOUT = 1
 jobs = set()  # jobs keeps the waiting jobs id. blocks type:'w'
 variables = {}  # addVariable to return values to scratch (blocks type: 'r')
 
