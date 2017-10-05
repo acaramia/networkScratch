@@ -30,10 +30,10 @@
 #    https://scratch.mit.edu/discuss/topic/38970/?page=1
 # probabilmente, l'estensione con url funziona solo sui domini concessi (github.io e code.me). da provare
 
-from flask import Flask, request
 import logging
 import time
-import pymysql.cursors
+
+from flask import Flask, request
 
 """ 
   global variables
@@ -138,7 +138,7 @@ def cube(jobId, block, side, x, y, z):
     return "OK"
 """
 
-from dbmysql import Db
+from netscratchMysql.dbmysql import Db
 
 def main():
     global app, db, EXTENSION_PORT
